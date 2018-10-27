@@ -23,15 +23,39 @@ module.exports = function(app) {
   
   // Create New friend 
   app.post("/api/friends", function(req, res) {
+    var bestMatch;
+    var userIndex;
+    
+    for (var i = 0; i <= friendsData.length - 1; i++) {
+      if (friendsData[i].name === req.body.name) {
+        userIndex = i;
+        continue;
+      } else {
+        var userScore = friendsData[i].scores;
+        var difference = 0;
+        for (var j = 0; j <= userScore.length - 1; j++) {
+          difference = difference + Math.abs(req.body.scores[j] - userScore[j]);
+        }
+        if (!(bestMatch == null)) {
+          if (bestMatch.diff > difference) {
+            bestMatch = {index: i, diff: difference};
+          } else if (bestMatch.diff === difference && Math.floor(Math.random() * 2) === 0) {
+            bestMatch = {index: i, diff: difference};
+          } 
+        } else {
+          bestMatch = {index: i, diff: difference};
+        }
+      }
+    }
+    
+    res.json(friendsData[bestMatch.index]);
 
-    var newfriend = req.body;
-
-    newfriend.routeName = newcfriend.name.replace(/\s+/g, "").toLowerCase();
-  
-    console.log(newfriend);
-  
-    friendData.push(newfriend);
-  
-    res.json(newfriend);
+    if (userIndex == null) {
+      friendsData.push(req.body);
+    } else {
+      friendsData[userIndex].photo = req.body.photo;
+      friendsData[userIndex].scores = req.body.scores;
+    }   
+    res.end();
   });
 }
