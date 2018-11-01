@@ -12,9 +12,9 @@ module.exports = function(app) {
   
     console.log(chosen);
   
-    for (var i = 0; i < friends.length; i++) {
-      if (chosen === friends[i].routeName) {
-        return res.json(friends[i]);
+    for (var i = 0; i < friend.length; i++) {
+      if (chosen === friend[i].routeName) {
+        return res.json(friend[i]);
       }
     }
   
@@ -24,14 +24,13 @@ module.exports = function(app) {
   // Create New friend 
   app.post("/api/friends", function(req, res) {
     var bestMatch;
-    var userIndex;
     
-    for (var i = 0; i <= friendsData.length - 1; i++) {
-      if (friendsData[i].name === req.body.name) {
+    for (var i = 0; i <= friendData.length - 1; i++) {
+      if (friendData[i].name === req.body.name) {
         userIndex = i;
         continue;
       } else {
-        var userScore = friendsData[i].scores;
+        var userScore = friendData[i].scores;
         var difference = 0;
         for (var j = 0; j <= userScore.length - 1; j++) {
           difference = difference + Math.abs(req.body.scores[j] - userScore[j]);
@@ -47,15 +46,11 @@ module.exports = function(app) {
         }
       }
     }
-    
-    res.json(friendsData[bestMatch.index]);
-
-    if (userIndex == null) {
-      friendsData.push(req.body);
-    } else {
-      friendsData[userIndex].photo = req.body.photo;
-      friendsData[userIndex].scores = req.body.scores;
-    }   
+    console.log(req.body);
+    friendData.push(req.body);
+    res.json(friendData[bestMatch.index]);
+   
+  
     res.end();
   });
 }
